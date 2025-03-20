@@ -20,6 +20,11 @@ export class DeviceManagerPageComponent {
     {id: 2, name: 'disable camera', enabled: false},
     {id: 3, name: 'geo location', enabled: false},
     {id: 4, name: 'screenshot', enabled: false},
+    {id: 5, name: 'shutdown', enabled: false},
+    {id: 6, name: 'restart', enabled: false},
+    {id: 7, name: 'disable browser', enabled: false},
+    {id: 8, name: 'disable usb', enabled: false},
+    {id: 9, name: 'force password change', enabled: false},
   ];
 
   togglePolicy(policyId: number): void {
