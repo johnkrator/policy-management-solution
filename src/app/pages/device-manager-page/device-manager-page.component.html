@@ -1,6 +1,18 @@
 <div class="flex items-center justify-center min-h-screen p-4">
   <div class="shadow bg-white w-full max-w-[50rem] rounded-2xl">
-    <h1 class="p-5 text-xl sm:text-2xl font-bold underline">Policies</h1>
+    <div class="p-5 flex justify-between items-center">
+      <h1 class="text-xl sm:text-2xl font-bold">Policies</h1>
+      <div class="flex items-center">
+        <span class="mr-2 text-sm">Connection:</span>
+        <span
+          [ngClass]="{'text-green-500': isConnected, 'text-red-500': !isConnected}"
+          class="text-sm font-medium"
+        >
+          {{ isConnected ? 'Connected' : 'Disconnected' }}
+        </span>
+      </div>
+    </div>
+
     <div class="max-h-[70vh] overflow-y-auto">
       <div
         *ngFor="let policy of policies"
@@ -9,8 +21,13 @@
         <p class="text-sm sm:text-base">{{ policy.name }}</p>
         <button
           (click)="togglePolicy(policy.id)"
+          [disabled]="!isConnected || sendingInProgress"
           class="flex items-center justify-center w-10 sm:w-1/12 h-5 sm:h-6 rounded-full p-1 cursor-pointer transform duration-300"
-          [ngClass]="{'bg-green-500': policy.enabled, 'bg-gray-300': !policy.enabled}"
+          [ngClass]="{
+            'bg-green-500': policy.enabled && isConnected,
+            'bg-gray-300': !policy.enabled && isConnected,
+            'bg-gray-200 opacity-50 cursor-not-allowed': !isConnected || sendingInProgress
+          }"
         >
           <div
             class="bg-white w-4 sm:w-5 h-4 sm:h-5 rounded-full shadow-md transform transition-transform duration-300"
