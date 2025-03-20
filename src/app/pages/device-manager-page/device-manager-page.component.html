@@ -1,0 +1,23 @@
+<div class="flex items-center justify-center min-h-screen p-4">
+  <div class="shadow bg-white w-full max-w-[50rem] rounded-2xl">
+    <h1 class="p-5 text-xl sm:text-2xl font-bold underline">Policies</h1>
+    <div class="max-h-[70vh] overflow-y-auto">
+      <div
+        *ngFor="let policy of policies"
+        class="flex justify-between items-center p-4 sm:p-5 capitalize border-t border-gray-100"
+      >
+        <p class="text-sm sm:text-base">{{ policy.name }}</p>
+        <button
+          (click)="togglePolicy(policy.id)"
+          class="flex items-center justify-center w-10 sm:w-1/12 h-5 sm:h-6 rounded-full p-1 cursor-pointer transform duration-300"
+          [ngClass]="{'bg-green-500': policy.enabled, 'bg-gray-300': !policy.enabled}"
+        >
+          <div
+            class="bg-white w-4 sm:w-5 h-4 sm:h-5 rounded-full shadow-md transform transition-transform duration-300"
+            [ngClass]="{'translate-x-5 sm:translate-x-6': policy.enabled, 'translate-x-0': !policy.enabled}"
+          ></div>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,47 @@
+<div class="relative min-h-screen flex">
+  <!-- Mobile menu button -->
+  <button
+    class="md:hidden fixed z-50 top-4 right-4 bg-gray-800 text-white p-2 rounded-md focus:outline-none"
+    (click)="toggleSidebar()">
+    <span *ngIf="!isSidebarOpen" class="block">&#9776;</span>
+    <span *ngIf="isSidebarOpen" class="block">&#10005;</span>
+  </button>
+
+  <!-- Sidebar -->
+  <div
+    class="bg-[#0ad86c] text-white font-bold w-64 shadow-lg fixed h-full z-40 transition-transform duration-300 ease-in-out"
+    [ngClass]="{'transform -translate-x-full': !isSidebarOpen, 'transform translate-x-0': isSidebarOpen}">
+    <div class="p-4">
+      <h2 class="text-xl font-semibold mb-6">Menu</h2>
+      <ul class="space-y-4">
+        <li><a [routerLink]="['/']" class="block hover:text-[#0ad86c] hover:bg-white px-3 py-2 transition duration-300">Home</a>
+        </li>
+        <li><a [routerLink]="['/device-manager']"
+               class="block hover:text-[#0ad86c] hover:bg-white px-3 py-2 transition duration-300">Device Manager</a>
+        </li>
+        <li><a href="#" class="block hover:text-[#0ad86c] hover:bg-white px-3 py-2 transition duration-300">Profile</a>
+        </li>
+        <li><a href="#" class="block hover:text-[#0ad86c] hover:bg-white px-3 py-2 transition duration-300">Settings</a>
+        </li>
+        <li><a href="#" class="block hover:text-[#0ad86c] hover:bg-white px-3 py-2 transition duration-300">Help</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div
+    class="flex-1 transition-margin duration-300 ease-in-out overflow-y-auto"
+    [ngClass]="{'ml-0 md:ml-64': isSidebarOpen, 'ml-0': !isSidebarOpen}">
+    <div class="p-4">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+
+  <!-- Overlay for mobile -->
+  <div
+    *ngIf="isSidebarOpen"
+    (click)="toggleSidebar()"
+    class="md:hidden fixed inset-0 bg-black bg-opacity-50 z-30">
+  </div>
+</div>
