@@ -13,6 +13,10 @@
       </div>
     </div>
 
+    <div *ngIf="lastMessage" class="px-5 pb-2 text-xs text-gray-500">
+      <p>Last message: {{ lastMessage }}</p>
+    </div>
+
     <div class="max-h-[70vh] overflow-y-auto">
       <div
         *ngFor="let policy of policies"

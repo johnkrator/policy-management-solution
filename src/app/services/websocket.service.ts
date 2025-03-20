@@ -3,28 +3,13 @@ import {webSocket, WebSocketSubject} from 'rxjs/webSocket';
 import {Observable, timer, Subject, BehaviorSubject} from 'rxjs';
 import {takeUntil, tap, share} from 'rxjs/operators';
 
-export interface PolicyUpdateMessage {
-  type: 'POLICY_UPDATE';
-  policyId: number;
-  enabled: boolean;
-}
-
-export interface ServerMessage {
-  type: string;
-  success: boolean;
-  message?: string;
-  data?: any;
-}
-
-export type WSMessage = PolicyUpdateMessage | ServerMessage;
-
 @Injectable({
   providedIn: 'root'
 })
 export class WebsocketService {
-  private socket$: WebSocketSubject<WSMessage> | null = null;
+  private socket$: WebSocketSubject<string> | null = null;
   private readonly SOCKET_URL = 'wss://echo.websocket.org';
-  private messagesSubject = new Subject<WSMessage>();
+  private messagesSubject = new Subject<string>();
   private messages$ = this.messagesSubject.asObservable().pipe(share());
   private connectionStatus$ = new BehaviorSubject<boolean>(false);
   private destroy$ = new Subject<void>();
@@ -46,7 +31,7 @@ export class WebsocketService {
 
       this.socket$.pipe(
         tap({
-          next: (message: WSMessage) => {
+          next: (message: string) => {
             console.log('Received message:', message);
             this.messagesSubject.next(message);
           },
@@ -66,29 +51,18 @@ export class WebsocketService {
     }
   }
 
-  private createWebSocket(): WebSocketSubject<WSMessage> {
-    return webSocket<WSMessage>({
+  private createWebSocket(): WebSocketSubject<string> {
+    return webSocket<string>({
       url: this.SOCKET_URL,
+      // Use raw string data for both incoming and outgoing messages
       deserializer: ({data}) => {
-        if (typeof data === 'string' && data.startsWith('Request served')) {
-          return {
-            type: 'CONNECT',
-            success: true,
-            message: data
-          } as ServerMessage;
-        }
-        try {
-          return typeof data === 'string' ? JSON.parse(data) : data;
-        } catch (err) {
-          console.warn('Invalid JSON response:', data);
-          return {
-            type: 'ERROR',
-            success: false,
-            message: 'Invalid server response'
-          } as ServerMessage;
-        }
+        // Return the raw data as a string
+        return data.toString();
       },
-      serializer: (value) => JSON.stringify(value),
+      serializer: (value) => {
+        // All outgoing messages are strings
+        return value;
+      },
       openObserver: {
         next: () => {
           console.log('WebSocket connected');
@@ -121,7 +95,7 @@ export class WebsocketService {
     }
   }
 
-  sendMessage(message: WSMessage): boolean {
+  sendMessage(message: string): boolean {
     if (this.socket$ && this.connectionStatus$.value) {
       try {
         this.socket$.next(message);
@@ -136,7 +110,12 @@ export class WebsocketService {
     }
   }
 
-  getMessages(): Observable<WSMessage> {
+  // Helper method to create a policy update message string
+  createPolicyUpdateMessage(policyId: number, enabled: boolean): string {
+    return `POLICY_UPDATE|${policyId}|${enabled}`;
+  }
+
+  getMessages(): Observable<string> {
     return this.messages$;
   }
 
